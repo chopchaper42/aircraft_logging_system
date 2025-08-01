@@ -14,27 +14,29 @@ typedef unsigned long uint32_t;
 #define GPIOA_MODER         ((uint32_t*)(GPIOA_BASE + 0x00))
 #define GPIOA_ODR           ((uint32_t*)(GPIOA_BASE + 0x14))
 
+
 void delay(uint32_t count);
 int main(void);
 
-/* minimal vector table */
-uint32_t *vector_table[] __attribute__((section(".isr_vector"))) =
-{
-    (uint32_t *)SRAM_END,
-    (uint32_t *)main
-};
+
+/* global initialized variable --> goes to .bss */
+volatile uint32_t dataVar = 0x3f;
+volatile uint32_t bssVar;
+
+const float vals[] = { 3.14, 0.43, 2.71 };
 
 int main()
 {
-    /* enable clock on GPIOA */
-    *RCC_APB1ENR = 0x1;
+    /* enable clock on GPIOA and GPIOC */
+    *RCC_APB1ENR = 0x1 | 0x4;
     /* PA5 as outpit pull-up */
     *GPIOA_MODER |= 0x400;
 
+    //while(vals[0] >= 3.14)
     while(1)
     {
         *GPIOA_ODR = 0x20;
-        delay(600000);
+        delay(200000);
         *GPIOA_ODR = 0x0;
         delay(600000);
     }
