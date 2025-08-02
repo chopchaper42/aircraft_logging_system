@@ -1,4 +1,5 @@
-typedef unsigned long uint32_t;
+#include <stdint.h>
+#include "hal.h"
 
 #define FLASH_BASE          0x08000000
 #define SRAM_BASE           0x20000000
@@ -27,18 +28,28 @@ const float vals[] = { 3.14, 0.43, 2.71 };
 
 int main()
 {
+    uint16_t PA4 = PIN('A', 4);
+
     /* enable clock on GPIOA and GPIOC */
     *RCC_APB1ENR = 0x1 | 0x4;
-    /* PA5 as outpit pull-up */
-    *GPIOA_MODER |= 0x400;
+
+    gpio_set_mode(PA4, GPIO_MODE_OUTPUT);
 
     //while(vals[0] >= 3.14)
     while(1)
     {
-        *GPIOA_ODR = 0x20;
+        /**GPIOA_ODR = 0x10;
         delay(200000);
         *GPIOA_ODR = 0x0;
-        delay(600000);
+        delay(600000);*/
+
+        gpio_set(PA4, HIGH);
+
+        delay(500000);
+
+        gpio_set(PA4, LOW);
+
+        delay(500000);
     }
 }
 

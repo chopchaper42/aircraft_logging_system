@@ -5,7 +5,7 @@
 *   Every register takes 4B of memory (see documentation) - so we use 32-bit integer to represent one register.
 *   Every GPIO has 10 registers. Those are the following:
 */
-struct  gpio {
+struct gpio {
     volatile uint32_t MODER, OTYPER, OSPEEDR, PUPDR, IDR, ODR, BSRR, LCKR, AFRL, AFRH
 };
 
@@ -14,7 +14,7 @@ struct  gpio {
 */
 #define GPIOA               ((struct gpio *) 0x40020000)
 #define GPIO(bank)          ((struct gpio *) 0x40020000 + (0x400 * (bank)))
-#define PIN(bank, num)      (((bank) - 'A') << 8 | (num));
+#define PIN(bank, num)      ((((char) bank) - 'A') << 8 | ((uint8_t) num));
 #define PINNO(pin)          (pin & 255) // pin: (0000 0111 0100 1100) & (0000 0000 1111 1111) = (0000 0000 0100 1100)
 #define PINBANK(pin)        (pin >> 8)
 
@@ -46,35 +46,45 @@ enum { OUTPUT_NO_UP_NO_DOWN, OUTPUT_PULL_UP, OUTPUT_PULL_DOWN };
 *   ODR REGISTER
 *   LOW = 0, HIGH = 1
 */
-enum { LOW, HIGH };
+typedef enum 
+{ 
+    LOW,
+    HIGH 
+} level_t;
 
 // OLD VERSION: static inline void gpio_set_mode(struct gpio *gpio, uint8_t pin, uint8_t mode);
 static inline void gpio_set_mode(uint16_t pin, uint8_t mode)
 {
     struct gpio *gpio = GPIO(PINBANK(pin));
-    uint8_t pin_num = PINNO(pin);
 
     gpio->MODER &= ~(3U << (pin * 2));
     gpio->MODER |= ((mode & 3U) << (pin * 2));
 }
 
-static inline void gpio_set(uint16_t pin, uint8_t value)
+static inline void gpio_set(uint16_t pin, level_t value)
 {
     struct gpio *gpio = GPIO(PINBANK(pin));
-    uint8_t pin_num = PINNO(pin);
 
-    if (value == LOW)
+    /*if (value == LOW)
     {
         gpio->ODR &= ~(1 << pin);
         return;
     }
-    gpio->ODR |= ((value & 127) << pin);
+    gpio->ODR |= ((value & 127) << pin);*/
+
+    if (value == HIGH)
+    {
+        gpio->BSRR |= (1U << pin);
+    }
+    else
+    {
+        gpio->BSRR |= (1U << (pin + 16));
+    }
 }
 
 static inline uint32_t gpio_get(uint16_t pin)
 {
     struct gpio *gpio = GPIO(PINBANK(pin));
-    uint8_t pin_num = PINNO(pin);
 
     return ((gpio->IDR & (1U << pin)) >> pin);
 }
