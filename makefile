@@ -1,6 +1,7 @@
 TARGET = program
 
 SOURCE = src
+INCLUDE = inc/
 BUILD = build
 LINKER_SCRIPT = STM32F411CEU6.ld
 MCU_SPEC = cortex-m4
@@ -29,7 +30,7 @@ LFLAGS += -nostdlib
 LFLAGS += -lgcc
 LFLAGS += -T$(LSCRIPT)
 
-C_SRC = main.c start.c
+C_SRC = main.c start.c hal.c
 OBJS = $(C_SRC:.c=.o)
 OBJ_PATHS = $(addprefix $(BUILD)/, $(OBJS))
 
@@ -37,7 +38,7 @@ OBJ_PATHS = $(addprefix $(BUILD)/, $(OBJS))
 all: $(BUILD)/$(TARGET).bin
 
 $(BUILD)/%.o: $(SOURCE)/%.c
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) -I $(INCLUDE) $< -o $@
 
 $(BUILD)/$(TARGET).elf: $(OBJ_PATHS)
 	$(CC) $^ $(LFLAGS) -o $@
