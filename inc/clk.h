@@ -1,0 +1,5 @@
+#include <stdint.h>
+
+#define HSI_FREQUENCY 16000000
+#define LSI_FREQUENCY 32000
+#define LSE_FREQUENCY 32768
