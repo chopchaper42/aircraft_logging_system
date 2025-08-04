@@ -95,39 +95,26 @@ void set_baud_rate(usart_baud_rate_t baud_rate)
 
     uint32_t usart_clock_frequency = HSI_FREQUENCY / (ahb_prescaler * apb2_prescaler);
 
-    float usart_div = usart_clock_frequency / (8 * (2 - usart_oversampling_bit) * baud_rate);
+    // We scale the UART_DIV by 16 to shift it to the left by 4, allowing to avoid float arithmetics
+    uint32_t divident = 16 * usart_clock_frequency;
+    uint32_t divisor = (8 * (2 - usart_oversampling_bit) * baud_rate);
+    
+    // [(a + (b/2)) / 2] rounds the integer
+    uint32_t usart_div_scaled = (divident + (divisor / 2)) / divisor;
 
-    // Calculate the integer and the decimal part of the usart_div
-    uint32_t usart_div_int_part = (uint32_t) usart_div;
-    float usart_div_decimal_part = usart_div - usart_div_int_part;
+    // Shift 4 bits to the right to get the mantissa
+    uint32_t mantissa = usart_div_scaled >> 4;
 
-    // Get the nearest integer to the USART_DIV_FRACTION_COEFFICIEN * usart_div_decimal_part
-    uint32_t div_fraction = (uint32_t)(round(USART_DIV_FRACTION_COEFFICIEN * usart_div_decimal_part));
-    uint32_t carry = 0;
-
-    // DIV_fraction is 4 bits long, if the div_fraciton is longer, carry must go to div_mantissa
-    if (div_fraction > 0xF)
-    {
-        carry = div_fraction - 0xF;
-        div_fraction = 0;
-    }
-
-    uint32_t div_mantissa = usart_div_int_part + carry;
+    // Clear all except the last 4 bits to get the fraction
+    uint32_t fraction = usart_div_scaled & 0xF;
 
     // When OVER8 = 1, the DIV_fraction[3] must be cleared
-    if (get_oversampling_bit() == 0b1)    
+    if (usart_oversampling_bit == 0b1)    
     {
         // Leave the first 3 less significant bits and clear the 4th
-        div_fraction &= 0b0111;
+        fraction &= 0b0111;
     }
 
-    // Write the usart_div_int_part and usart_div_decimal_part to the USART_BRR register
-    
-    // Clear the first 12 least significant bits
-    usart->USART_BRR &= ~(0xFFF);
-
-    // Write to the USART_BRR
-    usart->USART_BRR |= (div_mantissa << 4);
-    usart->USART_BRR |= div_fraction;
+    usart->USART_BRR = (mantissa << 4) | fraction;
 
 }
