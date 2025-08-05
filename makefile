@@ -30,7 +30,7 @@ LFLAGS += -nostdlib
 LFLAGS += -lgcc
 LFLAGS += -T$(LSCRIPT)
 
-C_SRC = main.c start.c hal.c
+C_SRC = main.c start.c hal.c clk.c usart.c
 OBJS = $(C_SRC:.c=.o)
 OBJ_PATHS = $(addprefix $(BUILD)/, $(OBJS))
 
