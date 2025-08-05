@@ -1,3 +1,6 @@
+#ifndef CLK_H
+#define CLK_H
+
 #include <stdint.h>
 
 #define HSI_FREQUENCY 16000000
@@ -99,3 +102,5 @@ void rcc_apb2_enable(rcc_apb2_peripheral_bit_t bit);
 
 // Disable an APB2 peripheral
 void rcc_apb2_disable(rcc_apb2_peripheral_bit_t bit);
+
+#endif

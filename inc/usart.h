@@ -1,3 +1,6 @@
+#ifndef USART_H
+#define USART_H
+
 #include <stdint.h>
 #include "clk.h"
 #include <math.h>
@@ -57,3 +60,5 @@ void usart_init(usart_word_length_t w_length, usart_stop_bit_number_t stop_bits,
 void usart_send_char(char ch);
 
 void usart_send(const char *data, uint32_t length);
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef GPIO_H
+#define GPIO_H
+
 #include <stdint.h>
 
 /*
@@ -88,3 +91,23 @@ static inline uint32_t gpio_get(uint16_t pin)
 
     return ((gpio->IDR & (1U << pin)) >> pin);
 }
+
+static inline void set_alternate_function(uint16_t pin, uint8_t function)
+{
+    uint8_t pin_num = PINNO(pin);
+
+    struct gpio *gpio = GPIO(PINBANK(pin));
+    
+    if (pin_num > 7)
+    {
+        gpio->AFRH &= ~(0xF << ((pin_num - 8) * 4) );
+        gpio->AFRH |= ( function << ((pin_num - 8) * 4) );
+    }
+    else
+    {
+        gpio->AFRL &= ~(0xF << ((pin_num) * 4) );
+        gpio->AFRL |= ( function << (pin_num * 4) );
+    }
+}
+
+#endif
