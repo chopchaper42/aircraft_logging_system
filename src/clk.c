@@ -1,8 +1,5 @@
 #include "clk.h"
 
-const static uint32_t rcc_ahb_scales[] = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
-const static uint32_t rcc_apbx_scales[] = { 1, 1, 1, 1, 2, 4, 8, 16 };
-
 static const uint16_t ahb_prescaler_table[16] = {
     1, 1, 1, 1, 1, 1, 1, 1,   // 0xxx: SYSCLK not divided
     2, 4, 8, 16, 64, 128, 256, 512  // 1xxx: SYSCLK divided

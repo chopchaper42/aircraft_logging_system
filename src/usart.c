@@ -108,7 +108,7 @@ void usart_send(const char *data, uint32_t length)
 {
     struct usart *usart = (struct usart *) USART_BASE;
 
-    for (uint32_t i = 0; i < length || data[i] != '\0'; i++)
+    for (uint32_t i = 0; i < length && data[i] != '\0'; i++)
     {
         while (!(usart->USART_SR & USART_SR_TXE));
         usart->USART_DR = data[i];
