@@ -11,8 +11,10 @@
 #define USART_CR1_UE (1U << 13)
 #define USART_CR1_OVER8 (1U << 15)
 #define USART_CR1_TE (1U << 3)
+#define USART_CR1_RE (1U << 2)
 #define USART_SR_TXE (1U << 7)
 #define USART_SR_TC (1U << 6)
+#define USART_SR_RXNE (1U << 5)
 
 #define USART_DIV_FRACTION_COEFFICIEN 16
 
@@ -55,10 +57,21 @@ void usart_set_baud_rate(usart_baud_rate_t baud_rate);
 
 void usart_enable_transmition();
 
+void usart_unable_reception();
+
 void usart_init(usart_word_length_t w_length, usart_stop_bit_number_t stop_bits, usart_baud_rate_t baud_rate);
 
 void usart_send_char(char ch);
 
 void usart_send(const char *data, uint32_t length);
+
+void usart_receive(uint8_t *received_byte);
+
+uint8_t usart_read_data_empty();
+
+static void npf_putchar_adapter(int c, void *ctx) {
+    (void) ctx; // Ignore context, or use it to pass USART handle if needed
+    usart_send_char(c);
+}
 
 #endif

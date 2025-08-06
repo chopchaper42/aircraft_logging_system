@@ -85,6 +85,14 @@ void usart_enable_transmition()
     usart->USART_CR1 |= USART_CR1_TE;
 }
 
+void usart_enable_reception()
+{
+    struct usart *usart = (struct usart *) USART_BASE;
+
+    // Set the RE (Reception Enable) bit
+    usart->USART_CR1 |= USART_CR1_RE;
+}
+
 void usart_init(usart_word_length_t w_length, usart_stop_bit_number_t stop_bits, usart_baud_rate_t baud_rate)
 {
     enable_usart();
@@ -92,6 +100,7 @@ void usart_init(usart_word_length_t w_length, usart_stop_bit_number_t stop_bits,
     usart_set_stop_bits(stop_bits);
     usart_set_baud_rate(baud_rate);
     usart_enable_transmition();
+    usart_enable_reception();
 }
 
 void usart_send_char(char ch)
@@ -115,4 +124,18 @@ void usart_send(const char *data, uint32_t length)
     }
 
     while (!(usart->USART_SR & USART_SR_TC));
+}
+
+void usart_receive(uint8_t *received_byte)
+{
+    struct usart *usart = (struct usart *) USART_BASE;
+
+    *received_byte = usart->USART_DR;
+}
+
+uint8_t usart_read_data_empty()
+{
+    struct usart *usart = (struct usart *) USART_BASE;
+
+    return (usart->USART_SR & USART_SR_RXNE) == 0;
 }
