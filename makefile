@@ -19,6 +19,7 @@ CFLAGS += -g
 CFLAGS += -fmessage-length=0
 # (Set system to ignore semihosted junk)
 CFLAGS += --specs=nosys.specs
+#CFLAGS += --specs=nano.specs
 
 # Linker directives.
 LSCRIPT = ./$(LINKER_SCRIPT)
@@ -26,11 +27,12 @@ LFLAGS += -mcpu=$(MCU_SPEC)
 LFLAGS += -mthumb
 LFLAGS += -Wall
 LFLAGS += --specs=nosys.specs
+#LFLAGS += --specs=nano.specs
 LFLAGS += -nostdlib
 LFLAGS += -lgcc
 LFLAGS += -T$(LSCRIPT)
 
-C_SRC = main.c start.c hal.c clk.c usart.c
+C_SRC = main.c start.c hal.c clk.c usart.c nanoprintf.c
 OBJS = $(C_SRC:.c=.o)
 OBJ_PATHS = $(addprefix $(BUILD)/, $(OBJS))
 
